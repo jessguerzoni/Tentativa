@@ -1,0 +1,54 @@
+Link do youtube do video inicial:  https://youtube.com/shorts/etBHaH13ZmQ?feature=share
+
+import moviepy.editor as mpe
+import numpy as np
+import matplotlib.pyplot as plt
+
+1 - #Inverter a imagem
+
+# Função para inverter a imagem
+def relect(frame):
+    img_refl = np.zeros(shape=frame.shape, dtype=np.uint8)
+    img_refl[::-1, ::-1] = frame
+    return img_refl
+
+# Carregar o vídeo
+video = mpe.VideoFileClip("shrek.mp4")
+
+# Dividir o vídeo em segmentos de 20 segundos e aplicar a inversão alternadamente
+clips = []
+for i in range(0, int(video.duration), 20):
+    subclip = video.subclip(i, min(i + 20, video.duration))
+    
+    # Aplicar a reflexão alternadamente
+    if (i // 20) % 2 == 1:  # Inverter a imagem a cada 20 segundos
+        subclip = subclip.fl_image(relect)
+    
+    clips.append(subclip)
+
+# Concatenar os clipes processados
+video_reflec = mpe.concatenate_videoclips(clips)
+
+# Exibir o vídeo no notebook
+video_reflec.ipython_display(width=480, maxduration=120)
+
+
+2 - #diminuicao a cada 10s
+
+def audio_fadeout(get_frame, t):
+    if t >= video_with_inverted_clips.duration - 10:
+        volume = max(0, 1 - (t - (video_with_inverted_clips.duration - 10)) / 10)
+    else:
+        volume = 1
+    return get_frame(t) * volume
+
+#3-)
+
+first_part = video_with_audio.subclip(0, 60)
+second_part = video_with_audio.subclip(80, video_with_audio.duration)
+
+# Etapa 4: Inserir os 20 segundos cortados no final do vídeo
+final_video = concatenate_videoclips([first_part, second_part, first_part.subclip(60, 80)])
+
+# Exportar o vídeo final
+final_video.write_videofile("shrek_final.mp4", codec="libx264", audio_codec="aac")
